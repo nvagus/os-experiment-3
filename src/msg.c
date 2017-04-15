@@ -9,6 +9,7 @@
 #include "oe3.h"
 
 int main(int argc, char *argv[], char *env[]) {
+	int ret = 1, generate = 0;
 	key_t key;
 	char mode = getopt(argc, argv, "rs");
 	if (mode == -1) {
@@ -23,16 +24,28 @@ int main(int argc, char *argv[], char *env[]) {
 		} else {
 			key = (key_t)getpid();
 		}
-		printf("Linking MSG: %d\n", key);
-		int msg = msgget(key, 0666 | IPC_CREAT);
+		int msg = msgget(key, 0666 | IPC_EXCL);
 		if (msg == -1) {
-			printf("Can't generate MSG: %d\n", key);
-			return 1;
-		} else if (mode == 'r') {
-			return receiver(msg);
+			msg = msgget(key, 0666 | IPC_CREAT);
+			if (msg == -1) {
+				printf("Can't generate MSG: %d\n", key);
+				return 1;
+			} else {
+				generate = 1;
+				printf("Generate MSG: %d\n", key);
+			}
+		}
+		printf("Linking MSG: %d\n", key);
+		if (mode == 'r') {
+			ret = receiver(msg);
 		} else if (mode == 's'){
-			return sender(msg);
+			ret = sender(msg);
+		}
+		if (generate == 1) {
+			sleep(4);
+			printf("Release MSGL %d\n", key);
+			msgctl(msg, IPC_RMID, NULL);
 		}
 	}
-	return 1;
+	return ret;
 }
