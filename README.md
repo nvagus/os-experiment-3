@@ -1,10 +1,10 @@
 # 编译
-用cmake,支持外部编译
-mkdir build
-cd build
-cmake ..
-make
-可执行文件分别为bin/msg, bin/fifo, bin/pipe
+用cmake,支持外部编译  
+mkdir build  
+cd build  
+cmake ..  
+make  
+可执行文件分别为bin/msg, bin/fifo, bin/pipe  
 # 源码
 源码在src文件夹下，头文件在include文件夹下
 msg，fifo，pipe分别对应消息队列、命名管道和（匿名）管道的通信方式
